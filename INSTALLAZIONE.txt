@@ -1,0 +1,76 @@
+==============================
+Guida di installazione
+==============================
+
+Questa guida descrive i passaggi principali per utilizzare il componente
+`infisolar_pi18` con ESPHome e integrare i sensori risultanti in Home Assistant.
+
+0. Requisiti
+   a. Installa l'ultima versione di [ESPHome](https://esphome.io/) su PC o via
+      add-on in Home Assistant.
+   b. Assicurati di avere Python 3.10+ e il supporto `pip` per poter eseguire
+      lo script di diagnostica CRC facoltativo.
+   c. Procurati un adattatore USB-TTL compatibile a 3,3 V oppure utilizza una
+      board ESP32/ESP8266 dotata di porta micro-USB.
+
+1. Preparazione del progetto ESPHome
+   a. Copia la cartella `esphome/components/infisolar_pi18` all'interno della
+      directory `esphome/` del tuo progetto ESPHome esistente (accanto alla
+      cartella `esphome/config/` se stai usando la struttura standard di
+      ESPHome).
+   b. Aggiungi il file di esempio `esphome/example.yaml` al tuo progetto e
+      personalizzalo con il nome del tuo nodo e le credenziali della rete Wi-Fi
+      se necessario.
+   c. Se utilizzi un nome file differente da `example.yaml`, aggiorna anche i
+      comandi di compilazione e upload citati più avanti nella guida.
+
+2. Configurazione ESPHome
+   a. Assicurati di impostare l'interfaccia UART con i pin corretti per il tuo
+      hardware (TX su GPIO4, RX su GPIO5) e con i parametri 2400 8N1.
+      *Suggerimento*: se usi un ESP8266, sostituisci `GPIO4`/`GPIO5` con `D2`/`D1`.
+   b. Includi il blocco `infisolar_pi18:` nel file YAML per avviare il
+      riconoscimento del protocollo e del modello durante il boot del nodo e
+      abbinalo ai `text_sensor` template forniti.
+   c. Mantieni attivato il logger a livello `DEBUG` per visualizzare nei log
+      seriali i frame ASCII/HEX e i codici CRC calcolati durante l'handshake.
+      Nel log dovresti vedere messaggi come "[HS] protocol detected" e
+      "[HS] model detected".
+
+3. Collegamenti hardware
+   a. Collega il pin TX dell'inverter al pin RX dell'ESP e viceversa (incrociati).
+   b. Condividi il riferimento di massa (GND) tra inverter e scheda ESP.
+   c. Verifica che il livello logico sia compatibile con 3,3 V. In caso di
+      inverter a 5 V utilizza un convertitore di livello.
+
+4. Compilazione e flash
+   a. Esegui `esphome compile example.yaml` per verificare che la configurazione
+      sia valida.
+   b. Usa `esphome upload example.yaml` per flashare il firmware sul dispositivo
+      ESP (tramite USB o OTA, a seconda delle tue necessità).
+   c. In caso di problemi di connessione OTA, prova prima il caricamento via USB
+      e successivamente riabilita l'aggiornamento wireless.
+
+5. Integrazione in Home Assistant
+   a. Apri l'interfaccia di Home Assistant e vai su "Impostazioni" ->
+      "Dispositivi e servizi" -> "Aggiungi integrazione".
+   b. Seleziona "ESPHome" e inserisci l'indirizzo IP o il nome host del nodo
+      appena flashato. Se non appare nell'elenco, premi su "Configura manualmente".
+   c. Dopo il pairing, Home Assistant creerà due sensori di testo che riportano
+      il protocollo e il modello rilevato dall'inverter.
+   d. Facoltativo: aggiungi le card del dashboard o i template YAML riportati in
+      `homeassistant/README.md` per visualizzare rapidamente i dati.
+   e. Per forzare una nuova negoziazione protocollo/modello invia dal pannello
+      ESPHome il comando "Ricomincia" oppure riavvia l'alimentazione del nodo.
+
+6. Risoluzione dei problemi
+   a. Controlla i log seriali di ESPHome per confermare il completamento dello
+      handshake (`Protocol detected` e `Model detected`). Se noti errori CRC,
+      verifica cablaggi e lunghezza del frame ricevuto.
+   b. Utilizza lo script `tools/pi18_crc_debug.py` per confrontare il CRC dei
+      frame catturati nel log con quello previsto dal protocollo PI18.
+   c. Se ricevi solo time-out nella fase di handshake, riduci la lunghezza dei
+      cavi, verifica la massa condivisa e assicurati che l'inverter sia acceso.
+
+Seguendo questi passaggi, il componente `infisolar_pi18` sarà operativo sia in
+ESPHome che in Home Assistant, fornendo diagnostica dettagliata sulla fase di
+handshake e integrandosi con la dashboard dell'impianto.
