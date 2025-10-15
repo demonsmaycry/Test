@@ -63,18 +63,6 @@ caused by the host implementation and not by the inverter. In that case
 update the firmware/driver so that it also evaluates the CRC using
 CRC-16/XMODEM with an initial value of `0x0000`.
 
-## Pubblicazione su GitHub
-
-Questo ambiente di sviluppo non dispone di credenziali o accesso diretto a un
-remoto GitHub, quindi non è possibile eseguire `git push` automatici dal
-container. Per pubblicare il progetto occorre scaricare il repository in locale
-oppure utilizzare GitHub Codespaces/Actions con le proprie credenziali e poi
-seguire i passaggi standard:
-
-1. Creare (se necessario) un repository vuoto su GitHub.
-2. Configurare il remoto: `git remote add origin https://github.com/<utente>/<repo>.git`.
-3. Inviare i commit: `git push -u origin work` (o il branch desiderato).
-4. Aprire una pull request o marcare il branch principale come definitivo.
 
 In questo modo il codice prodotto qui può essere pubblicato e condiviso su
 GitHub mantenendo il controllo completo delle credenziali e della cronologia.
