@@ -1,0 +1,58 @@
+esphome:
+  name: infisolar_gateway
+  platform: ESP32
+  board: esp32dev
+
+external_components:
+  - source:
+      type: local
+      path: .
+    components: [infisolar_pi18]
+
+wifi:
+  ssid: "Jarvis_Kitchen"
+  password: "casacasa"
+
+logger:
+  baud_rate: 115200
+  level: DEBUG
+
+api:
+
+ota:
+  platform: esphome
+  password: "002278381897ee74a889b741da5a16cc"
+
+time:
+  - platform: sntp
+
+uart:
+  id: uart_bus
+  tx_pin: GPIO4
+  rx_pin: GPIO5
+  baud_rate: 2400
+  parity: NONE
+  stop_bits: 1
+  data_bits: 8
+
+text_sensor:
+  - platform: template
+    id: protocol_id_sensor
+    name: "Infisolar Protocol"
+    update_interval: never
+    lambda: |-
+      return {};  # Updated automatically by the component
+  - platform: template
+    id: model_name_sensor
+    name: "Infisolar Model"
+    update_interval: never
+    lambda: |-
+      return {};
+
+infisolar_pi18:
+  id: inverter_bridge
+  uart_id: uart_bus
+  update_interval: 120s
+  protocol_sensor: protocol_id_sensor
+  model_sensor: model_name_sensor
+  handshake_retry: 3
